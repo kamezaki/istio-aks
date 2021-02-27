@@ -1,9 +1,18 @@
 // originally from: https://github.com/Azure/bicep/blob/fef0778170033b005b188ac140c04586ff39f4a0/docs/examples/101/aks-vmss-systemassigned-identity/main.bicep
+//
+// Before you will specify the parameters, you can see the naming rules for AKS at  https://aka.ms/aks-naming-rules
+//
 
 param location string {
   default: resourceGroup().location
   metadata: {
     description: 'Specifies the Azure location where the key vault should be created.'
+  }
+}
+param dnsPrefix string {
+  default: 'istio-aks'
+  metadata: {
+    description: 'The DNS prefix to use with hosted Kubernetes API server FQDN.'
   }
 }
 param clusterName string {
@@ -13,7 +22,7 @@ param clusterName string {
   }
 }
 param defaultAgentPoolName  string {
-  default: 'default-pool'
+  default: 'defaultpool'
   metadata: {
     description: 'The name of the default agent pool name.'
   }
@@ -34,14 +43,14 @@ param agentVMSize string {
 }
 
 // Azure Kubernetes Service configurations
-var kubernetesVersion = '1.19.0'
+var kubernetesVersion = '1.19.6'
 var nodeResourceGroup = 'rg-${clusterName}-aks'
 
 // virtual network configurations
 var virtualNetworkName = 'vnet-${clusterName}-${location}'
-var addressPrefix =  '172.30.0.0/16'
+var addressPrefix =  '172.27.0.0/16'
 var subnetName = 'subnet-${clusterName}-k8s-${location}'
-var subnetPrefix = '172.30.0.0/24'
+var subnetPrefix = '172.27.0.0/24'
 var subnetRef = '${vn.id}/subnets/${subnetName}'
 
 // common configurations
@@ -82,6 +91,19 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
   properties: {
     kubernetesVersion: kubernetesVersion
     enableRBAC: true
+    dnsPrefix: dnsPrefix
+    agentPoolProfiles: [
+      {
+        name: defaultAgentPoolName
+        count: agentCount
+        mode: 'System'
+        vmSize: agentVMSize
+        type: 'VirtualMachineScaleSets'
+        osType: 'Linux'
+        enableAutoScaling: false
+        vnetSubnetID: subnetRef
+      }
+    ]
     servicePrincipalProfile: {
       clientId: 'msi'   // use managed identity
     }
