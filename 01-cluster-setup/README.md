@@ -19,5 +19,8 @@ az group create -n rg-istio-aks -l japaneast
 bicep build istio-aks.bicep
 
 # deploy
-az deployment group create -f istio-aks.json -g rg-istio-aks
+az deployment group create -f istio-aks.json -g ${RESOURCE_GROUP}
 ```
+
+## Stop aks
+az aks stop -n ${CLUSTER} ${RESOURCE_GROUP}
