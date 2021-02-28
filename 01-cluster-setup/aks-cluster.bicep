@@ -1,24 +1,24 @@
-// originally from: https://github.com/Azure/bicep/blob/fef0778170033b005b188ac140c04586ff39f4a0/docs/examples/101/aks-vmss-systemassigned-identity/main.bicep
-//
-// Before you will specify the parameters, you can see the naming rules for AKS at  https://aka.ms/aks-naming-rules
-//
-
 param location string {
   default: resourceGroup().location
   metadata: {
     description: 'Specifies the Azure location where the key vault should be created.'
   }
 }
-param dnsPrefix string {
-  default: 'istio-aks'
+param kubernetesVersion string {
   metadata: {
-    description: 'The DNS prefix to use with hosted Kubernetes API server FQDN.'
+    description: 'Kubernetes versoin.'    
   }
 }
 param clusterName string {
-  default: 'sample-with-istio'
+  default: 'sample-istio'
   metadata: {
     description: 'The name of the Managed Cluster resource.'
+  }
+}
+param dnsPrefix string {
+  default: '${clusterName}'
+  metadata: {
+    description: 'The DNS prefix to use with hosted Kubernetes API server FQDN.'
   }
 }
 param defaultAgentPoolName  string {
@@ -55,9 +55,9 @@ param nodeResourceGroup string {
     description: 'The resource group name for aks node.'
   }
 }
-param kubernetesVersion string {
+param subnetRef string {
   metadata: {
-    description: 'Kubernetes versoin.'    
+    description: 'Subnet reference name for aks'
   }
 }
 param tags object {
@@ -67,34 +67,6 @@ param tags object {
   }
 }
 
-// virtual network configurations
-var virtualNetworkName = 'vnet-${clusterName}-${location}'
-var addressPrefix =  '172.27.0.0/16'
-var subnetName = 'subnet-${clusterName}-k8s-${location}'
-var subnetPrefix = '172.27.0.0/24'
-var subnetRef = '${vn.id}/subnets/${subnetName}'
-
-// Azure virtual network
-resource vn 'Microsoft.Network/virtualNetworks@2020-06-01' = {
-  name: virtualNetworkName
-  location: location
-  tags: tags
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        addressPrefix
-      ]
-    }
-    subnets: [
-      {
-        name: subnetName
-        properties: {
-          addressPrefix: subnetPrefix
-        }
-      }
-    ]
-  }
-}
 
 // Azure kubernetes service
 resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
@@ -111,6 +83,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
     agentPoolProfiles: [
       {
         name: defaultAgentPoolName
+        count: agentMinCount
         minCount: agentMinCount
         maxCount: agentMaxCount
         mode: 'System'

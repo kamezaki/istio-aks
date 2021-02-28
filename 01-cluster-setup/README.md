@@ -16,8 +16,8 @@ az group create -n rg-istio-aks -l japaneast
 
 ```
 # build
-bicep build main.bicep
+bicep build istio-aks.bicep
 
 # deploy
-az deployment group create -f main.json -g rg-istio-aks
+az deployment group create -f istio-aks.json -g rg-istio-aks
 ```
