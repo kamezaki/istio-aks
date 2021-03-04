@@ -25,6 +25,7 @@ module vnet './vnet.bicep' = {
   params: {
     virtualNetworkName: '${vnetName}'
     subnetName: '${subnetName}'
+    tags: tags
   }
 }
 
@@ -36,5 +37,6 @@ module aks './aks-cluster.bicep' = {
     agentMinCount: agentMinCount
     agentMaxCount: agentMaxCount
     subnetRef: subnetRef
+    tags: tags
   }
 }

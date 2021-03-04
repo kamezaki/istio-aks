@@ -17,9 +17,13 @@ az group create -n rg-istio-aks -l japaneast
 ```
 # build
 bicep build istio-aks.bicep
-
 # deploy
 az deployment group create -f istio-aks.json -g ${RESOURCE_GROUP}
+
+or 
+
+# You can deploy bicep file directly since az versoin 2.20.0+
+az deployment group create -f istio-aks.bicep -g ${RESOURCE_GROUP}
 ```
 
 ## Stop aks

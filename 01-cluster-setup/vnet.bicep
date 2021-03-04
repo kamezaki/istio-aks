@@ -1,39 +1,16 @@
 
-param location string {
-  default: resourceGroup().location
-  metadata: {
-    description: 'Specifies the Azure location where the key vault should be created.'
-  }
-}
-param tags object {
-  default: {}
-  metadata: {
-    description: 'Tag information for vnet'
-  }
-}
-param virtualNetworkName string {
-  metadata: {
-    description: 'Virtual network name'
-  }
-}
-param addressPrefix string {
-  default: '172.27.0.0/16'
-  metadata: {
-    description: 'Address prefix for virtual network'
-  }
-}
-param subnetPrefix string {
-  default: '172.27.0.0/24'
-  metadata: {
-    description: 'Subnet prefix for virtual network'
-  }
-}
-param subnetName string {
-  metadata: {
-    description: 'Subnet name'
-  }
-
-}
+// Specifies the Azure location where the key vault should be created.
+param location string =resourceGroup().location
+// Tag information for vnet
+param tags object = {}
+// Virtual network name
+param virtualNetworkName string
+// Address prefix for virtual network
+param addressPrefix string = '172.27.0.0/16'
+// Subnet prefix for virtual network
+param subnetPrefix string = '172.27.0.0/24'
+// Subnet name
+param subnetName string
 
 // Azure virtual network
 resource vn 'Microsoft.Network/virtualNetworks@2020-06-01' = {

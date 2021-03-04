@@ -1,72 +1,29 @@
-param location string {
-  default: resourceGroup().location
-  metadata: {
-    description: 'Specifies the Azure location where the key vault should be created.'
-  }
-}
-param kubernetesVersion string {
-  metadata: {
-    description: 'Kubernetes versoin.'    
-  }
-}
-param clusterName string {
-  default: 'sample-istio'
-  metadata: {
-    description: 'The name of the Managed Cluster resource.'
-  }
-}
-param dnsPrefix string {
-  default: '${clusterName}'
-  metadata: {
-    description: 'The DNS prefix to use with hosted Kubernetes API server FQDN.'
-  }
-}
-param defaultAgentPoolName  string {
-  default: 'defaultpool'
-  metadata: {
-    description: 'The name of the default agent pool name.'
-  }
-}
-param agentMinCount int {
-  default: 1
-  minValue: 1
-  maxValue: 50
-  metadata: {
-    description: 'The mininum number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production'
-  }
-}
-param agentMaxCount int {
-  default: 1
-  minValue: 1
-  maxValue: 100
-  metadata: {
-    description: 'The maximum number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production'
-  }
-}
-param agentVMSize string {
-  default: 'Standard_D2_v3'
-  metadata: {
-    description: 'The size of the Virtual Machine.'
-  }
-}
-param nodeResourceGroup string {
-  default: 'rg-${clusterName}-aks'
-  metadata: {
-    description: 'The resource group name for aks node.'
-  }
-}
-param subnetRef string {
-  metadata: {
-    description: 'Subnet reference name for aks'
-  }
-}
-param tags object {
-  default: {}
-  metadata: {
-    description: 'Tag information for aks resource'
-  }
-}
-
+// Specifies the Azure location where the key vault should be created.
+param location string = resourceGroup().location
+// Kubernetes versoin.
+param kubernetesVersion string
+// The name of the Managed Cluster resource.
+param clusterName string = 'sample-istio'
+// The DNS prefix to use with hosted Kubernetes API server FQDN.
+param dnsPrefix string = '${clusterName}'
+// The name of the default agent pool name.
+param defaultAgentPoolName  string = 'defaultpool'
+// The mininum number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production
+@minValue(1)
+@maxValue(50)
+param agentMinCount int = 1
+// The maximum number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production
+@minValue(1)
+@maxValue(100)
+param agentMaxCount int = 1
+// The size of the Virtual Machine.
+param agentVMSize string = 'Standard_D2_v3'
+// The resource group name for aks node.
+param nodeResourceGroup string = 'rg-${clusterName}-aks'
+// Subnet reference name for aks
+param subnetRef string
+// Tag information for aks resource
+param tags object = {}
 
 // Azure kubernetes service
 resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
