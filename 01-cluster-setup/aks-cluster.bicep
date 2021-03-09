@@ -8,6 +8,8 @@ param clusterName string = 'sample-istio'
 param dnsPrefix string = '${clusterName}'
 // The name of the default agent pool name.
 param defaultAgentPoolName  string = 'defaultpool'
+// Array for availability zones
+param availabilityZones array = []
 // The mininum number of nodes for the cluster. 1 Node is enough for Dev/Test and minimum 3 nodes, is recommended for Production
 @minValue(1)
 @maxValue(50)
@@ -48,6 +50,7 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
         type: 'VirtualMachineScaleSets'
         osType: 'Linux'
         enableAutoScaling: true
+        availabilityZones: length(availabilityZones) == 0 ? json('null') : availabilityZones
         vnetSubnetID: subnetRef
       }
     ]

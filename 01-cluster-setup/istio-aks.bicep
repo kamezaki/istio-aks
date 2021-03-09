@@ -16,7 +16,7 @@ var subnetName = 'subnet-${serviceName}-aks-${location}'
 
 // kubernetes attributes
 var clusterName = '${serviceName}-${location}'
-var agentMinCount = 2
+var agentMinCount = 3
 var agentMaxCount = 5
 var subnetRef = '${vnet.outputs.id}/subnets/${subnetName}'
 
@@ -34,6 +34,11 @@ module aks './aks-cluster.bicep' = {
   params: {
     clusterName: '${clusterName}'
     kubernetesVersion: '1.19.6'
+    availabilityZones: [
+      '1'
+      '2'
+      '3'
+    ]
     agentMinCount: agentMinCount
     agentMaxCount: agentMaxCount
     subnetRef: subnetRef
