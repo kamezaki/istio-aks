@@ -24,7 +24,7 @@ var agentMaxCount = 5
 var subnetRef = '${vnet.outputs.id}/subnets/${subnetName}'
 
 module vnet './vnet.bicep' = {
-  name: '${vnetName}'
+  name: vnetName
   params: {
     virtualNetworkName: vnetName
     subnetName: subnetName
@@ -36,6 +36,7 @@ module workspace './loganalytics.bicep'  = if(enableWorkspace) {
   name: 'workspace-${serviceName}'
   params: {
     workspaceNamePrefix: serviceName
+    tags: tags
   }
 }
 
@@ -53,7 +54,15 @@ module aks './aks-cluster.bicep' = {
     agentMinCount: agentMinCount
     agentMaxCount: agentMaxCount
     subnetRef: subnetRef
-    workspaceId: enableWorkspace == true ? workspace.outputs.workspaceId : ''
+    workspaceId: enableWorkspace == true ? workspace.outputs.id : ''
     tags: tags
   }
 }
+
+output vnetName string = vnet.outputs.name
+output vnetId string = vnet.outputs.id
+output workspaceId string = workspace.outputs.id
+output workspaceName string = workspace.outputs.name
+output aksId string = aks.outputs.id
+output aksClusterName string = aks.outputs.name
+output aksServerAddress string = aks.outputs.apiServerAddress

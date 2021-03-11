@@ -76,4 +76,5 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
 }
 
 output id string = aks.id
+output name string = aks.name
 output apiServerAddress string = aks.properties.fqdn

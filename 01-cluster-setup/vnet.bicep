@@ -35,3 +35,4 @@ resource vn 'Microsoft.Network/virtualNetworks@2020-06-01' = {
 }
 
 output id string = vn.id
+output name string = vn.name
