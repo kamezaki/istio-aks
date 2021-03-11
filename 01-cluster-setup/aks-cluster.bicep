@@ -24,6 +24,8 @@ param agentVMSize string = 'Standard_D2_v3'
 param nodeResourceGroup string = 'rg-${clusterName}-aks'
 // Subnet reference name for aks
 param subnetRef string
+// Log analytics workspace id
+param workspaceId string = ''
 // Tag information for aks resource
 param tags object = {}
 
@@ -61,6 +63,14 @@ resource aks 'Microsoft.ContainerService/managedClusters@2020-12-01' = {
     networkProfile: {
       networkPlugin: 'azure'  // use Azure CNI
       loadBalancerSku: 'standard'
+    }
+    addonProfiles: {
+      omsagent: empty(workspaceId) ? json('null') : {
+        config: {
+          logAnalyticsWorkspaceResourceID: workspaceId
+        }
+        enabled: true
+      }
     }
   }
 }

@@ -3,6 +3,9 @@
 // Before you will specify the parameters, you can see the naming rules for AKS at  https://aka.ms/aks-naming-rules
 //
 
+@description('Enable Log analytics workspace')
+param enableWorkspace bool = true
+
 // Common attributs
 var location = resourceGroup().location
 var tags = {
@@ -23,16 +26,24 @@ var subnetRef = '${vnet.outputs.id}/subnets/${subnetName}'
 module vnet './vnet.bicep' = {
   name: '${vnetName}'
   params: {
-    virtualNetworkName: '${vnetName}'
-    subnetName: '${subnetName}'
+    virtualNetworkName: vnetName
+    subnetName: subnetName
     tags: tags
   }
 }
 
-module aks './aks-cluster.bicep' = {
-  name: '${clusterName}'
+module workspace './loganalytics.bicep'  = if(enableWorkspace) {
+  name: 'workspace-${serviceName}'
   params: {
-    clusterName: '${clusterName}'
+    workspaceNamePrefix: serviceName
+  }
+}
+
+
+module aks './aks-cluster.bicep' = {
+  name: clusterName
+  params: {
+    clusterName: clusterName
     kubernetesVersion: '1.19.6'
     availabilityZones: [
       '1'
@@ -42,6 +53,7 @@ module aks './aks-cluster.bicep' = {
     agentMinCount: agentMinCount
     agentMaxCount: agentMaxCount
     subnetRef: subnetRef
+    workspaceId: enableWorkspace == true ? workspace.outputs.workspaceId : ''
     tags: tags
   }
 }
